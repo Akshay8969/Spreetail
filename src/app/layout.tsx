@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import TopNav from "@/components/TopNav";
 
 export const metadata: Metadata = {
   title: "FlatSplit — Shared Expenses for The Flat",
-  description: "Track, split, and settle shared expenses with your flat-mates. Clean balances, full audit trail.",
+  description: "Track, split, and settle shared expenses with your flat-mates.",
 };
 
 export default function RootLayout({
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <TopNav />
+        {children}
+      </body>
     </html>
   );
 }

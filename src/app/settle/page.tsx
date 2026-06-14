@@ -58,10 +58,7 @@ export default function SettlePage() {
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      <nav className="nav">
-        <Link href="/" className="nav-logo"><span className="nav-logo-icon">💸</span>FlatSplit</Link>
-        <Link href="/" className="nav-link">← Cancel</Link>
-      </nav>
+      
       <div className="page" style={{ maxWidth: 560 }}>
         <div className="hero mb-6">
           <div className="hero-title">Record a Payment</div>

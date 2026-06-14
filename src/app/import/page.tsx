@@ -102,13 +102,7 @@ export default function ImportPage() {
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      <nav className="nav">
-        <Link href="/" className="nav-logo">
-          <span className="nav-logo-icon">💸</span>
-          FlatSplit
-        </Link>
-        <Link href="/" className="nav-link">← Back to Dashboard</Link>
-      </nav>
+
 
       <div className="page">
         <div className="hero">

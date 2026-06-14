@@ -87,18 +87,14 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      {/* Nav */}
-      <nav className="nav">
-        <a href="/" className="nav-logo">
-          <span className="nav-logo-icon">💸</span>
-          FlatSplit
-        </a>
-        <a href="/" className={`nav-link ${activeTab === "balances" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setActiveTab("balances"); }}>Balances</a>
-        <a href="/" className={`nav-link ${activeTab === "expenses" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setActiveTab("expenses"); }}>Expenses</a>
-        <a href="/" className={`nav-link ${activeTab === "settlements" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); setActiveTab("settlements"); }}>Settlements</a>
-        <Link href="/import" className="nav-link">Import CSV</Link>
-        <Link href="/add-expense" className="btn btn-primary" style={{ padding: "7px 16px", fontSize: 13 }}>+ Add Expense</Link>
-      </nav>
+      {/* Page Tabs */}
+      <div style={{ borderBottom: "1px solid var(--border)", marginBottom: 24 }}>
+        <div className="page" style={{ paddingBottom: 0, display: "flex", gap: 24 }}>
+          <button className={`nav-link ${activeTab === "balances" ? "active" : ""}`} onClick={() => setActiveTab("balances")} style={{ background: "transparent", border: "none", cursor: "pointer", paddingBottom: 16 }}>Balances</button>
+          <button className={`nav-link ${activeTab === "expenses" ? "active" : ""}`} onClick={() => setActiveTab("expenses")} style={{ background: "transparent", border: "none", cursor: "pointer", paddingBottom: 16 }}>Expenses</button>
+          <button className={`nav-link ${activeTab === "settlements" ? "active" : ""}`} onClick={() => setActiveTab("settlements")} style={{ background: "transparent", border: "none", cursor: "pointer", paddingBottom: 16 }}>Settlements</button>
+        </div>
+      </div>
 
       <div className="page">
         {/* Hero */}

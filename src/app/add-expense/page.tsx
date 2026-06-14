@@ -92,10 +92,7 @@ export default function AddExpensePage() {
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      <nav className="nav">
-        <Link href="/" className="nav-logo"><span className="nav-logo-icon">💸</span>FlatSplit</Link>
-        <Link href="/" className="nav-link">← Cancel</Link>
-      </nav>
+      
       <div className="page" style={{ maxWidth: 720 }}>
         <div className="hero mb-6">
           <div className="hero-title">Add New Expense</div>
