@@ -2,19 +2,39 @@
 
 ## Database Schema
 
-We use a relational PostgreSQL database via Prisma ORM.
+We use a relational PostgreSQL database via Prisma ORM. Below is the updated schema reflecting secure user authentication features, CSV import history tracking, granular anomaly references, deletion requests, and database constraints.
 
 ```prisma
+// This is your Prisma schema file
+// Shared Expenses App — "The Flat"
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Core models ─────────────────────────────────────────────────────────────
+
 model Person {
   id           String  @id @default(cuid())
   name         String  @unique
   displayName  String
+  email        String? @unique
+  passwordHash String?
   avatarColor  String  @default("#6366f1")
+  createdAt    DateTime @default(now())
 
   expensesPaid   Expense[]      @relation("PaidBy")
   splits         ExpenseSplit[]
   settlementsFrom Settlement[]  @relation("SettlementFrom")
   settlementsTo   Settlement[]  @relation("SettlementTo")
+  deletionRequests DeletionRequest[] @relation("RequestUser")
+  deletionApprovals DeletionRequest[] @relation("ApprovalUser")
 }
 
 model Expense {
@@ -24,14 +44,20 @@ model Expense {
   amountOriginal   Float
   currencyOriginal String    @default("INR")
   amountInr        Float
-  splitType        SplitType // EQUAL, UNEQUAL, PERCENTAGE, SHARE
+  splitType        SplitType
   date             DateTime
   notes            String?
   isDeleted        Boolean   @default(false)
-  
+  importRowNumber  Int?
+  importSessionId  String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
   paidBy          Person          @relation("PaidBy", fields: [paidById], references: [id])
+  importSession   ImportSession?  @relation(fields: [importSessionId], references: [id])
   splits          ExpenseSplit[]
   anomalies       ImportAnomaly[]
+  deletionRequest DeletionRequest?
 }
 
 model ExpenseSplit {
@@ -40,9 +66,13 @@ model ExpenseSplit {
   personId       String
   shareAmountInr Float
   shareOriginal  String?
-  
+  settledAt      DateTime?
+  createdAt      DateTime  @default(now())
+
   expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
   person  Person  @relation(fields: [personId], references: [id])
+
+  @@unique([expenseId, personId])
 }
 
 model Settlement {
@@ -51,20 +81,70 @@ model Settlement {
   paidToId        String
   amountInr       Float
   date            DateTime @default(now())
-  
+  notes           String?
+  importRowNumber Int?
+  importSessionId String?
+  createdAt       DateTime @default(now())
+
   paidBy        Person         @relation("SettlementFrom", fields: [paidById], references: [id])
   paidTo        Person         @relation("SettlementTo", fields: [paidToId], references: [id])
+  importSession ImportSession? @relation(fields: [importSessionId], references: [id])
+}
+
+model ImportSession {
+  id            String   @id @default(cuid())
+  filename      String
+  importedAt    DateTime @default(now())
+  totalRows     Int      @default(0)
+  importedCount Int      @default(0)
+  skippedCount  Int      @default(0)
+  flaggedCount  Int      @default(0)
+
+  expenses    Expense[]
+  settlements Settlement[]
+  anomalies   ImportAnomaly[]
 }
 
 model ImportAnomaly {
   id                 String       @id @default(cuid())
+  sessionId          String
+  expenseId          String?
   rowNumber          Int
+  rawRow             String
   anomalyType        String
   anomalyDescription String
   actionTaken        String
   resolutionNotes    String?
+  createdAt          DateTime     @default(now())
+
+  session ImportSession @relation(fields: [sessionId], references: [id])
+  expense Expense?      @relation(fields: [expenseId], references: [id])
+}
+
+model DeletionRequest {
+  id            String    @id @default(cuid())
+  expenseId     String    @unique
+  requestedById String
+  approverId    String?
+  status        String    @default("PENDING")
+  reason        String?
+  createdAt     DateTime  @default(now())
+  resolvedAt    DateTime?
+
+  expense     Expense @relation(fields: [expenseId], references: [id])
+  requestedBy Person  @relation("RequestUser", fields: [requestedById], references: [id])
+  approver    Person? @relation("ApprovalUser", fields: [approverId], references: [id])
+}
+
+enum SplitType {
+  EQUAL
+  UNEQUAL
+  PERCENTAGE
+  SHARE
 }
 ```
+
+---
 
 ## Anomalies Detected in Data
 
