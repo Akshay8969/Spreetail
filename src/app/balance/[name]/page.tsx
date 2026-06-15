@@ -50,7 +50,7 @@ export default function BalancePage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh" }}>
-      <nav className="nav"><Link href="/" className="nav-logo"><span className="nav-logo-icon">💸</span>FlatSplit</Link></nav>
+      
       <div className="page"><div className="card" style={{ textAlign: "center", padding: 48 }}><div className="spinner" style={{ margin: "0 auto" }} /></div></div>
     </div>
   );
